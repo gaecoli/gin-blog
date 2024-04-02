@@ -1,6 +1,13 @@
 package router
 
-import "github.com/gin-gonic/gin"
+import (
+	"gin-blog/blog-server/internal/handles"
+	"github.com/gin-gonic/gin"
+)
+
+var (
+	blogViewApi handles.BlogView
+)
 
 func RegisterRouter(r *gin.Engine) {
 	registerJwtHandler(r)
@@ -8,27 +15,34 @@ func RegisterRouter(r *gin.Engine) {
 	registerBlogManagerHandler(r)
 }
 
+// jwt handler, include login, register, etc.
 func registerJwtHandler(r *gin.Engine) {
 
 }
 
+// blog manager handler, need to jwt auth
 func registerBlogManagerHandler(r *gin.Engine) {
 
 }
 
-//  blog view handler, don't need to auth
+// blog view handler, don't need to auth
 func registerBlogViewHandler(r *gin.Engine) {
-	base := r.Group("/api/v1")
+	blog := r.Group("/api/v1/blog")
 
-	base.GET("/home", func(c *gin.Context) {
+	blog.GET("/home", blogViewApi.BlogHome)
+	blog.GET("/page", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"message": "Welcome to the blog!",
+			"message": "Page",
+		})
+	})
+	blog.GET("/about", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "About me",
 		})
 	})
 
-	article := base.Group("/article")
+	article := blog.Group("/article")
 	{
-
 		article.GET("/list", func(c *gin.Context) {
 			c.JSON(200, gin.H{
 				"message": "List all articles",
