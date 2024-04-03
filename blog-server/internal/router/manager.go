@@ -1,12 +1,13 @@
 package router
 
 import (
-	"gin-blog/blog-server/internal/handles"
+	"gin-blog/blog-server/internal/handle"
 	"github.com/gin-gonic/gin"
 )
 
+// handle instance
 var (
-	blogViewApi handles.BlogView
+	blogViewApi handle.BlogView // blog 前台展示 handle 处理函数
 )
 
 func RegisterRouter(r *gin.Engine) {

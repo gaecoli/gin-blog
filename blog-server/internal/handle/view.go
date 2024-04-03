@@ -1,7 +1,8 @@
-package handles
+package handle
 
 import "github.com/gin-gonic/gin"
 
+// BlogView 前台展示的博客的视图
 type BlogView struct{}
 
 func (*BlogView) BlogHome(c *gin.Context) {
