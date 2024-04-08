@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	g "gin-blog/blog-server/internal/global"
 	middle "gin-blog/blog-server/internal/middleware"
 	"gin-blog/blog-server/internal/model"
 	"gin-blog/blog-server/internal/router"
@@ -9,6 +11,12 @@ import (
 )
 
 func main() {
+	configPath := flag.String("c", "../../config.yaml", "配置文件路径")
+	flag.Parse()
+
+	conf := g.ReadConfig(*configPath)
+	db := model.InitDB(conf)
+
 	// init db
 	err := model.InitDB()
 	if err != nil {
