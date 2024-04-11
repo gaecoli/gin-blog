@@ -46,18 +46,18 @@ func GetConfig() *Config {
 func ReadConfig(path string) *Config {
 	v := viper.New()
 	v.SetConfigFile(path)
-	v.AutomaticEnv()                                   // 可以使用环境变量
-	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_")) // xxx_xx => xxx.xx
+	v.AutomaticEnv()                                   // 允许使用环境变量
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_")) // SERVER_APPMODE => SERVER.APPMODE
 
 	if err := v.ReadInConfig(); err != nil {
-		panic("Config file read failed: " + err.Error())
+		panic("配置文件读取失败: " + err.Error())
 	}
 
 	if err := v.Unmarshal(&Conf); err != nil {
 		panic("配置文件反序列化失败: " + err.Error())
 	}
 
-	log.Println("配置文件内容加载成功：", path)
+	log.Println("配置文件内容加载成功: ", path)
 	return Conf
 }
 

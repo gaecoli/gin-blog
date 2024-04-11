@@ -1,10 +1,33 @@
 package handle
 
-import "github.com/gin-gonic/gin"
+import (
+	g "gin-blog/internal/global"
+	"gin-blog/internal/model"
+	"github.com/gin-gonic/gin"
+)
 
-// BlogView 前台展示的博客的视图
-type BlogView struct{}
+type BlogInfo struct{}
 
-func (*BlogView) BlogHome(c *gin.Context) {
-	c.String(200, "Welcome to my blog!")
+type BlogHomeVO struct {
+	ArticleCount int `json:"article_count"`
+	UserCount    int `json:"user_count"`
+	MessageCount int `json:"message_count"`
+	ViewCount    int `json:"view_count"`
+	// 分类数量，标签数量等等
+}
+
+type AboutReq struct {
+	Content string `json:"content"`
+}
+
+func (*BlogInfo) GetConfigMap(c *gin.Context) {
+	db := GetDB(c)
+
+	data, err := model.GetConfigMap(db)
+	if err != nil {
+		ReturnError(c, g.ErrDbOp, err)
+		return
+	}
+
+	ReturnSuccess(c, data)
 }

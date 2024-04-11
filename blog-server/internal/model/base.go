@@ -1,7 +1,7 @@
 package model
 
 import (
-	g "gin-blog/blog-server/internal/global"
+	g "gin-blog/internal/global"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -56,4 +56,3 @@ func InitDB(conf *g.Config) *gorm.DB {
 
 	return db
 }
-

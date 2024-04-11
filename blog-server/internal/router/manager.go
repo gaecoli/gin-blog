@@ -1,7 +1,7 @@
 package router
 
 import (
-	"gin-blog/blog-server/internal/handle"
+	"gin-blog/internal/handle"
 	"github.com/gin-gonic/gin"
 )
 
