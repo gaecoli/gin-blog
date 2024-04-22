@@ -7,7 +7,7 @@ import (
 
 // handle instance
 var (
-	blogViewApi handle.BlogView // blog 前台展示 handle 处理函数
+	blogViewApi handle.BlogInfo // blog 前台展示 handle 处理函数
 )
 
 func RegisterRouter(r *gin.Engine) {
@@ -30,7 +30,7 @@ func registerBlogManagerHandler(r *gin.Engine) {
 func registerBlogViewHandler(r *gin.Engine) {
 	blog := r.Group("/api/v1/blog")
 
-	blog.GET("/home", blogViewApi.BlogHome)
+	blog.GET("/home", blogViewApi.GetHomeInfo)
 	blog.GET("/page", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "Page",

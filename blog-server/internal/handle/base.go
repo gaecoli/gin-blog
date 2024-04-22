@@ -37,8 +37,30 @@ func GetDB(c *gin.Context) *gorm.DB {
 	return c.MustGet(g.CTX_DB).(*gorm.DB)
 }
 
+// TODO: 学习 error 处理
 func ReturnError(c *gin.Context, r g.Result, data any) {
 	slog.Info("[Func-ReturnError]" + r.Msg())
+
+	val := r.Msg()
+
+	if data != nil {
+		switch v := data.(type) {
+		case error:
+			val = v.Error()
+		case string:
+			val = v
+		}
+		slog.Error(val) // 错误日志
+	}
+
+	c.AbortWithStatusJSON(
+		http.StatusOK,
+		Response[any]{
+			Code:    r.Code(),
+			Message: r.Msg(),
+			Data:    val,
+		},
+	)
 }
 
 func ReturnSuccess(c *gin.Context, data any) {

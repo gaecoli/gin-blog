@@ -10,6 +10,15 @@ import (
 	"time"
 )
 
+func makeMigrateDb(db *gorm.DB) error {
+
+	return db.AutoMigrate(
+		&Article{},  // 文章
+		&Category{}, // 分类
+		&Tag{},      // 标签
+	)
+}
+
 type Model struct {
 	ID        int       `gorm:"primary_key;auto_increment" json:"id"`
 	CreatedAt time.Time `json:"created_at"`
@@ -53,6 +62,25 @@ func InitDB(conf *g.Config) *gorm.DB {
 
 	// TODO: 数据库迁移
 	// if conf.Server.DbAutoMigrate
+	//if conf.Server.DbAutoMigrate {
+	//	if err := makeMigrateDb(db); err != nil {
+	//		log.Fatal("数据库迁移失败", err)
+	//	}
+	//	log.Println("数据库自动迁移成功")
+	//}
 
 	return db
+}
+
+func Count[T any](db *gorm.DB, data *T, where ...any) (int, error) {
+	var total int64
+	db = db.Model(data)
+	if len(where) > 0 {
+		db = db.Where(where[0], where[1:]...)
+	}
+	result := db.Count(&total)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return int(total), nil
 }

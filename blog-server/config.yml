@@ -1,7 +1,7 @@
 Server:
-  Mode: debug
+  Mode: release
   Port: :9090
-  DbAutoMigrate: true
+  DbAutoMigrate: false
   DbLogMode: "info"
 Mysql:
   Host: 127.0.0.1

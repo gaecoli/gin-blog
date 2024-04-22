@@ -23,20 +23,20 @@ func main() {
 	// set gin router
 	gin.SetMode(conf.Server.Mode)
 	r := gin.New()
-	err := r.SetTrustedProxies([]string{"*"})
-	if err != nil {
-		return
-	}
 
+	r.SetTrustedProxies([]string{"*"})
+
+	// set gin logger and recovery middleware
 	if conf.Server.Mode == "debug" {
 		r.Use(gin.Logger(), gin.Recovery())
 	} else {
 		r.Use(middle.Recovery(true), middle.GinLogger())
 	}
+
 	// add gin cors middleware
 	r.Use(middle.Cors())
 	// gin handle with gorm
-	r.Use(middle.WithGormDB(db))
+	r.Use(middle.SetGormDB(db))
 
 	router.RegisterRouter(r)
 
