@@ -42,7 +42,7 @@ func main() {
 
 	serverPort := conf.Server.Port
 
-	log.Println("gin-blog serve on...")
+	log.Println("gin-blog serve on...", serverPort)
 
 	r.Run(serverPort)
 }

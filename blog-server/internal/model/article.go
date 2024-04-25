@@ -21,6 +21,11 @@ type Article struct {
 	Category *Category `gorm:"foreignKey:CategoryId" json:"category"`
 }
 
+type ArticleTag struct {
+	ArticleId int `json:"article_id"`
+	TagId     int `json:"tag_id"`
+}
+
 // 新建文章
 func CreateArt(db *gorm.DB, article *Article) error {
 	return db.Transaction(func(tx *gorm.DB) error {
@@ -64,6 +69,11 @@ func GetArt(db *gorm.DB, id int) (data *Article, err error) {
 
 func DeleteArt(db *gorm.DB, id int) error {
 	return db.Transaction(func(tx *gorm.DB) error {
+		err := tx.Where("article_id in ?", id).Delete(&ArticleTag{}).Error
+		if err != nil {
+			return err
+		}
+
 		result := tx.Where("id = ?", id).Delete(&Article{})
 		if result.Error != nil {
 			return result.Error

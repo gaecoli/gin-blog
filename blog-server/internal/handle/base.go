@@ -67,3 +67,8 @@ type CategoryResult[T any] struct {
 	Results []T   `json:"results"`
 	Total   int64 `json:"total"`
 }
+
+type TagResult[T any] struct {
+	Results []T   `json:"results"`
+	Total   int64 `json:"total"`
+}

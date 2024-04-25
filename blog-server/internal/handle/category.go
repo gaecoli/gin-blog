@@ -24,9 +24,7 @@ func (*Category) GetCategoryList(c *gin.Context) {
 	list := make([]CategoryResultVO, 0)
 
 	for _, result := range results {
-		list = append(list, CategoryResultVO{
-			CategoryVO: result,
-		})
+		list = append(list, CategoryResultVO{result})
 	}
 
 	ReturnSuccess(c, CategoryResult[CategoryResultVO]{

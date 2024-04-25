@@ -74,9 +74,13 @@ func (*Article) DeleteArticle(c *gin.Context) {
 	ReturnSuccess(c, nil)
 }
 
+type ArchiveParam struct {
+	ID int `json:"id"`
+}
+
 func (*Article) SoftDeleteArticle(c *gin.Context) {
-	stringId := c.Param("id")
-	id, err := strconv.Atoi(stringId)
+	var archiveParam ArchiveParam
+	err := c.ShouldBindJSON(&archiveParam)
 	if err != nil {
 		ReturnError(c, g.ErrRequest, err)
 		return
@@ -84,7 +88,7 @@ func (*Article) SoftDeleteArticle(c *gin.Context) {
 
 	db := model.GetDB(c)
 
-	_, err = model.SoftDeleteArt(db, id)
+	_, err = model.SoftDeleteArt(db, archiveParam.ID)
 	if err != nil {
 		ReturnError(c, g.ErrDbOp, err)
 		return

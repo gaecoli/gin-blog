@@ -10,6 +10,7 @@ var (
 	blogViewApi handle.BlogInfo // blog 前台展示 handle 处理函数
 	articleApi  handle.Article  // 文章相关 handle 处理函数
 	categoryApi handle.Category // 分类相关 handle 处理函数
+	tagApi      handle.Tag
 )
 
 func RegisterRouter(r *gin.Engine) {
@@ -51,7 +52,7 @@ func registerBlogViewHandler(r *gin.Engine) {
 		article.POST("/update", articleApi.UpdateArticle)
 		article.GET("/:id", articleApi.GetArticle)
 		article.DELETE("/:id", articleApi.DeleteArticle)
-		article.PUT("/soft-delete/:id", articleApi.SoftDeleteArticle)
+		article.PUT("/archive", articleApi.SoftDeleteArticle)
 	}
 
 	category := blog.Group("/category")
@@ -60,5 +61,12 @@ func registerBlogViewHandler(r *gin.Engine) {
 		category.POST("/create", categoryApi.CreateCategory)
 		category.POST("/update", categoryApi.UpdateCategory)
 		category.DELETE("/:id", categoryApi.DeleteCategory)
+	}
+
+	tag := blog.Group("/tag")
+	{
+		tag.POST("", tagApi.CreateOrUpdateTag)
+		tag.GET("/list", tagApi.GetTagList)
+		tag.DELETE("/:id", tagApi.DeleteTag)
 	}
 }

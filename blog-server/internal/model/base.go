@@ -93,3 +93,24 @@ func Count[T any](db *gorm.DB, data *T, where ...any) (int, error) {
 	}
 	return int(total), nil
 }
+
+// 分页器校验
+func Paginate(pageNum, pageSize int) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if pageNum < 1 {
+			pageNum = 1
+		}
+
+		switch {
+		case pageSize > 100:
+			pageSize = 100
+		case pageSize < 1:
+			pageSize = 10
+		}
+
+		limit := pageSize
+		offset := (pageSize - 1) * pageNum
+
+		return db.Limit(limit).Offset(offset)
+	}
+}
