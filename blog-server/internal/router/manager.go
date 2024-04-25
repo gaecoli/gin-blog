@@ -8,6 +8,7 @@ import (
 // handle instance
 var (
 	blogViewApi handle.BlogInfo // blog 前台展示 handle 处理函数
+	articleApi  handle.Article  // 文章相关 handle 处理函数
 )
 
 func RegisterRouter(r *gin.Engine) {
@@ -49,6 +50,11 @@ func registerBlogViewHandler(r *gin.Engine) {
 				"message": "List all articles",
 			})
 		})
+		article.POST("/create", articleApi.CreateArticle)
+		article.POST("/update", articleApi.UpdateArticle)
+		article.GET("/:id", articleApi.GetArticle)
+		article.DELETE("/:id", articleApi.DeleteArticle)
+		article.PUT("/soft-delete/:id", articleApi.SoftDeleteArticle)
 	}
 
 }

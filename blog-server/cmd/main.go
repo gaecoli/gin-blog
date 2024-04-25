@@ -42,7 +42,7 @@ func main() {
 
 	serverPort := conf.Server.Port
 
-	log.Printf("gin-blot serveing HTTP on (http://%s/)...\n", serverPort)
+	log.Println("gin-blog serve on...")
 
 	r.Run(serverPort)
 }

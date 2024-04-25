@@ -10,10 +10,6 @@ type BlogInfo struct{}
 
 type BlogHomeVO struct {
 	ArticleCount int `json:"article_count"`
-	//UserCount    int `json:"user_count"`
-	//MessageCount int `json:"message_count"`
-	//ViewCount    int `json:"view_count"`
-	// 分类数量，标签数量等等
 }
 
 type AboutReq struct {
@@ -21,7 +17,7 @@ type AboutReq struct {
 }
 
 func (*BlogInfo) GetConfigMap(c *gin.Context) {
-	db := GetDB(c)
+	db := model.GetDB(c)
 
 	data, err := model.GetConfigMap(db)
 	if err != nil {
@@ -38,7 +34,7 @@ func (*BlogInfo) UpdateConfig(c *gin.Context) {
 }
 
 func (*BlogInfo) GetHomeInfo(c *gin.Context) {
-	db := GetDB(c)
+	db := model.GetDB(c)
 
 	articleCount, err := model.Count(db, &model.Article{}, "status = ? AND is_deleted = ?", 1, 0)
 	if err != nil {

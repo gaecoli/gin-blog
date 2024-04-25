@@ -2,6 +2,7 @@ package model
 
 import (
 	g "gin-blog/internal/global"
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -9,6 +10,16 @@ import (
 	"log"
 	"time"
 )
+
+func GetDB(c *gin.Context) *gorm.DB {
+	// gin MustGet返回一个 any (interface{})
+	// 通过类型断言的方式将它转为想要的 *gorm.DB 类型
+	// 例子：
+	// var a interface{} = 10
+	// t, ok := a.(int) 转为整数类型
+	// t1, ok1 := a.(float32) 转为浮点数类型
+	return c.MustGet(g.CTX_DB).(*gorm.DB)
+}
 
 func makeMigrateDb(db *gorm.DB) error {
 
@@ -60,14 +71,12 @@ func InitDB(conf *g.Config) *gorm.DB {
 
 	log.Println("数据库连接成功: ", dsn)
 
-	// TODO: 数据库迁移
-	// if conf.Server.DbAutoMigrate
-	//if conf.Server.DbAutoMigrate {
-	//	if err := makeMigrateDb(db); err != nil {
-	//		log.Fatal("数据库迁移失败", err)
-	//	}
-	//	log.Println("数据库自动迁移成功")
-	//}
+	if conf.Server.DbAutoMigrate {
+		if err := makeMigrateDb(db); err != nil {
+			log.Fatal("数据库迁移失败", err)
+		}
+		log.Println("数据库自动迁移成功")
+	}
 
 	return db
 }
