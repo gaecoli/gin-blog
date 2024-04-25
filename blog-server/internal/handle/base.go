@@ -55,3 +55,15 @@ func ReturnError(c *gin.Context, r g.Result, data any) {
 func ReturnSuccess(c *gin.Context, data any) {
 	ReturnResponse(c, g.OkResult, data)
 }
+
+type PageResult[T any] struct {
+	PageNum  int   `json:"page_num"`     // 每页条数
+	PageSize int   `json:"page_size"`    // 上次页数
+	Total    int64 `json:"total"`        // 总条数
+	Results  []T   `json:"page_results"` // 分页数据
+}
+
+type CategoryResult[T any] struct {
+	Results []T   `json:"results"`
+	Total   int64 `json:"total"`
+}

@@ -92,3 +92,57 @@ func (*Article) SoftDeleteArticle(c *gin.Context) {
 
 	ReturnSuccess(c, nil)
 }
+
+type ArticlePageParam struct {
+	PageNum  int `form:"page_num"`
+	PageSize int `form:"page_size"`
+}
+
+type ArticlePageResults struct {
+	model.Article
+}
+
+func (*Article) GetArticleList(c *gin.Context) {
+	var query ArticlePageParam
+	err := c.ShouldBindQuery(&query)
+	if err != nil {
+		ReturnError(c, g.ErrRequest, query)
+		return
+	}
+
+	pageNum := query.PageNum
+	pageSize := query.PageSize
+
+	// 处理分页异常情况
+	if pageNum < 1 {
+		pageNum = 1
+	}
+
+	switch {
+	case pageSize >= 100:
+		pageSize = 100
+	case pageSize <= 0:
+		pageSize = 10
+	}
+
+	db := model.GetDB(c)
+
+	articles, total, err := model.GetArticleList(db, pageNum, pageSize)
+	if err != nil {
+		ReturnError(c, g.ErrDbOp, err)
+		return
+	}
+
+	pageResults := make([]ArticlePageResults, 0)
+	for _, article := range articles {
+		pageResults = append(pageResults, ArticlePageResults{article})
+	}
+
+	ReturnSuccess(c, PageResult[ArticlePageResults]{
+		PageNum:  pageNum,
+		PageSize: pageSize,
+		Total:    total,
+		Results:  pageResults,
+	})
+
+}

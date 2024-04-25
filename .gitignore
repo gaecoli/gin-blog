@@ -23,3 +23,6 @@ go.work
 =======
 .idea
 >>>>>>> df568ba (add test file)
+
+# vue3
+node_modules

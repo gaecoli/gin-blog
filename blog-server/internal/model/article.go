@@ -25,7 +25,7 @@ type Article struct {
 func CreateArt(db *gorm.DB, article *Article) error {
 	return db.Transaction(func(tx *gorm.DB) error {
 		// TODO: 需要补充 tags 和 category 的处理
-		result := db.Create(&article)
+		result := tx.Create(&article)
 		if result.Error != nil {
 			return result.Error
 		}
@@ -39,7 +39,7 @@ func UpdateArt(db *gorm.DB, article *Article) error {
 		if article.ID == 0 {
 			return nil
 		} else {
-			result = db.Model(&article).Where("id = ?", article.ID).Updates(article)
+			result = tx.Model(&article).Where("id = ?", article.ID).Updates(article)
 		}
 		if result.Error != nil {
 			return result.Error
@@ -53,7 +53,9 @@ func GetArt(db *gorm.DB, id int) (data *Article, err error) {
 		return nil, nil
 	}
 
-	result := db.Model(&Article{}).Where("id = ?", id).First(&data)
+	db = db.Preload("Category").Preload("Tags")
+
+	result := db.Model(&Article{}).Where("id = ? AND is_deleted = 0 AND status = 1", id).First(&data)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -62,7 +64,7 @@ func GetArt(db *gorm.DB, id int) (data *Article, err error) {
 
 func DeleteArt(db *gorm.DB, id int) error {
 	return db.Transaction(func(tx *gorm.DB) error {
-		result := db.Where("id = ?", id).Delete(&Article{})
+		result := tx.Where("id = ?", id).Delete(&Article{})
 		if result.Error != nil {
 			return result.Error
 		}
@@ -76,4 +78,29 @@ func SoftDeleteArt(db *gorm.DB, id int) (int64, error) {
 		return 0, result.Error
 	}
 	return 1, nil
+}
+
+// 获取文章列表
+func GetArticleList(db *gorm.DB, pageNum, pageSize int) (articles []Article, total int64, err error) {
+	db = db.Preload("Category").Preload("Tags")
+
+	db = db.Select("id," +
+		"title," +
+		"`desc`," +
+		"image," +
+		"`type`," +
+		"status," +
+		"is_top," +
+		"is_deleted," +
+		"category_id," +
+		"created_at," +
+		"updated_at").Where("is_deleted = 0 " +
+		"AND status = 1").Limit(pageSize).Offset((pageNum - 1) * pageSize).Order("created_at Desc").Find(&articles)
+	if db.Error != nil {
+		return nil, 0, db.Error
+	}
+
+	_ = db.Count(&total)
+	return articles, total, nil
+
 }
