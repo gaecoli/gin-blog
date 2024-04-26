@@ -74,12 +74,12 @@ func (*Article) DeleteArticle(c *gin.Context) {
 	ReturnSuccess(c, nil)
 }
 
-type ArchiveParam struct {
-	ID int `json:"id"`
+type SoftArchiveArticleParam struct {
+	ID int `json:"id" binding:"required"`
 }
 
 func (*Article) SoftDeleteArticle(c *gin.Context) {
-	var archiveParam ArchiveParam
+	var archiveParam SoftArchiveArticleParam
 	err := c.ShouldBindJSON(&archiveParam)
 	if err != nil {
 		ReturnError(c, g.ErrRequest, err)
@@ -102,9 +102,9 @@ type ArticlePageParam struct {
 	PageSize int `form:"page_size"`
 }
 
-type ArticlePageResults struct {
-	model.Article
-}
+//type ArticlePageResults struct {
+//	model.Article
+//}
 
 func (*Article) GetArticleList(c *gin.Context) {
 	var query ArticlePageParam
@@ -137,16 +137,16 @@ func (*Article) GetArticleList(c *gin.Context) {
 		return
 	}
 
-	pageResults := make([]ArticlePageResults, 0)
-	for _, article := range articles {
-		pageResults = append(pageResults, ArticlePageResults{article})
-	}
+	//pageResults := make([]ArticlePageResults, 0)
+	//for _, article := range articles {
+	//	pageResults = append(pageResults, ArticlePageResults{article})
+	//}
 
-	ReturnSuccess(c, PageResult[ArticlePageResults]{
+	ReturnSuccess(c, PageResult[model.Article]{
 		PageNum:  pageNum,
 		PageSize: pageSize,
 		Total:    total,
-		Results:  pageResults,
+		Results:  articles,
 	})
 
 }
