@@ -104,8 +104,12 @@ func GetArticleList(db *gorm.DB, pageNum, pageSize int) (articles []Article, tot
 		"is_deleted," +
 		"category_id," +
 		"created_at," +
-		"updated_at").Where("is_deleted = 0 " +
-		"AND status = 1").Limit(pageSize).Offset((pageNum - 1) * pageSize).Order("created_at Desc").Find(&articles)
+		"updated_at").
+		Where("is_deleted = 0 AND status = 1").
+		Scopes(Paginate(pageNum, pageSize)).
+		Order("created_at Desc").
+		Find(&articles)
+
 	if db.Error != nil {
 		return nil, 0, db.Error
 	}

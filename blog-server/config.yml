@@ -10,4 +10,11 @@ Mysql:
   Dbname: "gin_blog"
   Username: root
   Password: 12345678
+Jwt:
+  JwtKey: 242m6etvj5
+  ExpireDays: 7
+Session:
+  Name: "gin-blog"
+  Salt: "salt"
+  MaxAge: 600
 

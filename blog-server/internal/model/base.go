@@ -3,6 +3,7 @@ package model
 import (
 	g "gin-blog/internal/global"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -10,6 +11,14 @@ import (
 	"log"
 	"time"
 )
+
+type JSON []byte
+
+type Model struct {
+	ID        int       `gorm:"primary_key;auto_increment" json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
 
 func GetDB(c *gin.Context) *gorm.DB {
 	// gin MustGet返回一个 any (interface{})
@@ -27,13 +36,8 @@ func makeMigrateDb(db *gorm.DB) error {
 		&Article{},  // 文章
 		&Category{}, // 分类
 		&Tag{},      // 标签
+		&User{},     // 用户
 	)
-}
-
-type Model struct {
-	ID        int       `gorm:"primary_key;auto_increment" json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // InitDB 连接数据库，目前暂时只支持 MySQL
@@ -113,4 +117,20 @@ func Paginate(pageNum, pageSize int) func(db *gorm.DB) *gorm.DB {
 
 		return db.Limit(limit).Offset(offset)
 	}
+}
+
+// 对密码进行加密操作
+func PasswordHashString(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(bytes), nil
+}
+
+// 密码验证
+func PasswordVerify(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+
+	return err == nil
 }

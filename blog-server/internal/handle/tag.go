@@ -57,10 +57,6 @@ type TagListParam struct {
 	Keyword  string `json:"keyword"`
 }
 
-type TagListResult struct {
-	model.TagVO
-}
-
 func (*Tag) GetTagList(c *gin.Context) {
 	var tagListParam TagListParam
 	err := c.ShouldBindQuery(&tagListParam)
@@ -78,14 +74,8 @@ func (*Tag) GetTagList(c *gin.Context) {
 		ReturnError(c, g.ErrDbOp, err)
 	}
 
-	lists := make([]TagListResult, 0)
-
-	for _, list := range results {
-		lists = append(lists, TagListResult{list})
-	}
-
-	ReturnSuccess(c, TagResult[TagListResult]{
-		Results: lists,
+	ReturnSuccess(c, TagResult[model.TagVO]{
+		Results: results,
 		Total:   total,
 	})
 }

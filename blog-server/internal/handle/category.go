@@ -9,26 +9,18 @@ import (
 
 type Category struct{}
 
-type CategoryResultVO struct {
-	model.CategoryVO
-}
-
 func (*Category) GetCategoryList(c *gin.Context) {
 	db := model.GetDB(c)
+
 	results, total, err := model.GetCategories(db)
+
 	if err != nil {
 		ReturnError(c, g.ErrDbOp, err)
 		return
 	}
 
-	list := make([]CategoryResultVO, 0)
-
-	for _, result := range results {
-		list = append(list, CategoryResultVO{result})
-	}
-
-	ReturnSuccess(c, CategoryResult[CategoryResultVO]{
-		Results: list,
+	ReturnSuccess(c, CategoryResult[model.CategoryVO]{
+		Results: results,
 		Total:   total,
 	})
 }
