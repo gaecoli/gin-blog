@@ -37,7 +37,7 @@ func main() {
 	r.Use(middle.Cors())
 	// gin handle with gorm
 	r.Use(middle.SetGormDB(db))
-	r.Use(middle.WithCookieMiddle())
+	r.Use(middle.WithCookieMiddle(conf.Session.Name, conf.Session.Salt))
 
 	router.RegisterRouter(r)
 

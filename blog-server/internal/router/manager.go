@@ -2,6 +2,7 @@ package router
 
 import (
 	"gin-blog/internal/handle"
+	"gin-blog/internal/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,6 +12,7 @@ var (
 	articleApi  handle.Article  // 文章相关 handle 处理函数
 	categoryApi handle.Category // 分类相关 handle 处理函数
 	tagApi      handle.Tag
+	authApi     handle.LoginApi
 )
 
 func RegisterRouter(r *gin.Engine) {
@@ -19,13 +21,64 @@ func RegisterRouter(r *gin.Engine) {
 	registerBlogManagerHandler(r)
 }
 
-// jwt handler, include login, register, etc.
+// blog 的登录，注册接口，不需要鉴权
 func registerJwtHandler(r *gin.Engine) {
+	blog := r.Group("/api/v1")
+
+	blog.POST("/login", authApi.Login)
+	blog.GET("/logout", authApi.Logout)
+	blog.POST("/register", authApi.Register)
+	blog.GET("/send_code", authApi.SendEmailCode)
 
 }
 
-// blog manager handler, need to jwt auth
+// blog 管理接口，全部需要登录和鉴权
 func registerBlogManagerHandler(r *gin.Engine) {
+	auth := r.Group("/api/v1/manager")
+
+	auth.Use(middleware.JwtAuthMiddleware())
+	// TODO: 获取管理员编辑的操作日志
+
+	// TODO: 补齐 about 编辑和获取
+	about := auth.Group("/setting")
+	{
+		about.GET("/about", func(c *gin.Context) {
+			c.JSON(200, "获取 about 页面信息")
+		})
+		about.PUT("/about", func(c *gin.Context) {
+			c.JSON(200, "更新 about 页面")
+		})
+	}
+
+	// TODO: 补齐关于用户模块的 api
+	//user := auth.Group("/user")
+	//{
+	//	user.GET("/list", )
+	//}
+
+	category := auth.Group("/category")
+	{
+		category.GET("/list", categoryApi.GetCategoryList)
+		category.POST("/new", categoryApi.CreateCategory)
+		category.POST("/update", categoryApi.UpdateCategory)
+		category.DELETE("", categoryApi.DeleteCategory)
+	}
+
+	tag := auth.Group("/tag")
+	{
+		tag.GET("/list", tagApi.GetTagList)
+		tag.POST("", tagApi.CreateOrUpdateTag)
+		tag.DELETE("", tagApi.DeleteTag)
+	}
+
+	article := auth.Group("/article")
+	{
+		article.GET("/list", articleApi.GetArticleList)
+		article.POST("", articleApi.CreateArticle)
+		article.GET("/:id", articleApi.GetArticle)
+		article.PUT("archive", articleApi.SoftDeleteArticle)
+		article.DELETE("", articleApi.DeleteArticle)
+	}
 
 }
 
@@ -33,40 +86,22 @@ func registerBlogManagerHandler(r *gin.Engine) {
 func registerBlogViewHandler(r *gin.Engine) {
 	blog := r.Group("/api/v1")
 
+	//blog.GET("/about", )
 	blog.GET("/home", blogViewApi.GetHomeInfo)
-	blog.GET("/page", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Page",
-		})
-	})
-	blog.GET("/about", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "About me",
-		})
-	})
 
 	article := blog.Group("/article")
 	{
 		article.GET("/list", articleApi.GetArticleList)
-		article.POST("/create", articleApi.CreateArticle)
-		article.POST("/update", articleApi.UpdateArticle)
 		article.GET("/:id", articleApi.GetArticle)
-		article.DELETE("/:id", articleApi.DeleteArticle)
-		article.PUT("/archive", articleApi.SoftDeleteArticle)
 	}
 
 	category := blog.Group("/category")
 	{
 		category.GET("/list", categoryApi.GetCategoryList)
-		category.POST("/create", categoryApi.CreateCategory)
-		category.POST("/update", categoryApi.UpdateCategory)
-		category.DELETE("/:id", categoryApi.DeleteCategory)
 	}
 
 	tag := blog.Group("/tag")
 	{
-		tag.POST("", tagApi.CreateOrUpdateTag)
 		tag.GET("/list", tagApi.GetTagList)
-		tag.DELETE("/:id", tagApi.DeleteTag)
 	}
 }

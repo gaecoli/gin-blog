@@ -15,7 +15,7 @@ func GetConfigMap(db *gorm.DB) (map[string]string, error) {
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	
+
 	m := make(map[string]string)
 	for _, config := range configs {
 		m[config.Key] = config.Value

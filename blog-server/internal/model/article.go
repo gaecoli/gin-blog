@@ -94,7 +94,7 @@ func SoftDeleteArt(db *gorm.DB, id int) (int64, error) {
 func GetArticleList(db *gorm.DB, pageNum, pageSize int) (articles []Article, total int64, err error) {
 	db = db.Preload("Category").Preload("Tags")
 
-	db = db.Select("id," +
+	db = db.Model(&Article{}).Select("id," +
 		"title," +
 		"`desc`," +
 		"image," +
@@ -115,6 +115,6 @@ func GetArticleList(db *gorm.DB, pageNum, pageSize int) (articles []Article, tot
 	}
 
 	_ = db.Count(&total)
-	return articles, total, nil
 
+	return articles, total, nil
 }

@@ -34,11 +34,14 @@ type Config struct {
 		JwtKey     string
 		ExpireDays int
 	}
+	Session struct {
+		Name   string
+		Salt   string
+		MaxAge int
+	}
 }
 
 var Conf *Config
-
-var JwtKey = Conf.Jwt.JwtKey
 
 // GetConfig 获取配置文件
 func GetConfig() *Config {

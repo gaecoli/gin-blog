@@ -4,6 +4,7 @@ import (
 	"errors"
 	util "gin-blog/internal/utils"
 	"gorm.io/gorm"
+	"strings"
 	"time"
 )
 
@@ -48,6 +49,14 @@ func CreateUserInfo(db *gorm.DB, user *User) error {
 			return err
 		}
 		user.Password = hashedPassword
+		
+		parts := strings.Split(user.Email, "@")
+		if len(parts) < 1 {
+			return errors.New("邮箱错误")
+		}
+		name := parts[0]
+
+		user.Name = name
 
 		err = db.Model(&User{}).Create(&user).Error
 		return err
