@@ -37,7 +37,16 @@ func (*Article) CreateArticle(c *gin.Context) {
 	var data model.Article
 	_ = c.ShouldBindJSON(&data)
 
+	currentUser, err := GetCurrentUser(c)
+
+	if err != nil || currentUser == nil {
+		ReturnError(c, g.ErrNotFound, "登录错误，不可以编辑文章")
+		return
+	}
+
 	db := model.GetDB(c)
+
+	data.UserId = currentUser.ID
 
 	article := model.CreateArt(db, &data)
 
@@ -118,7 +127,7 @@ func (*Article) GetArticleList(c *gin.Context) {
 		return
 	}
 
-	ReturnSuccess(c, PageResult[model.Article]{
+	ReturnSuccess(c, PageResult{
 		PageNum:  query.PageNum,
 		PageSize: query.PageSize,
 		Total:    total,

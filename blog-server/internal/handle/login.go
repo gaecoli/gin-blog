@@ -3,6 +3,7 @@ package handle
 import (
 	g "gin-blog/internal/global"
 	"gin-blog/internal/model"
+	"gin-blog/internal/utils"
 	"gin-blog/internal/utils/jwt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -57,7 +58,7 @@ func (*LoginApi) Login(c *gin.Context) {
 func (*LoginApi) Logout(c *gin.Context) {
 
 	session := sessions.Default(c)
-	session.Delete(g.CTX_USER)
+	session.Clear()
 	err := session.Save()
 	if err != nil {
 		return
@@ -66,24 +67,51 @@ func (*LoginApi) Logout(c *gin.Context) {
 	ReturnSuccess(c, nil)
 }
 
+type UserRegister struct {
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	EmailCode string `json:"email_code"`
+}
+
 func (*LoginApi) Register(c *gin.Context) {
 	// 创建一个 User 结构体来接收用户提交的注册信息
-	newUser := model.User{}
-	if err := c.ShouldBindJSON(&newUser); err != nil {
+	var user UserRegister
+	if err := c.ShouldBindJSON(&user); err != nil {
 		ReturnError(c, g.ErrRequestRegister, err)
+		return
+	}
+
+	isEmail := utils.IsValidEmail(user.Email)
+	if !isEmail {
+		ReturnError(c, g.ErrRequestRegister, "邮箱不合法，请检查！")
+	}
+
+	checkPasswd := utils.IsValidPassword(user.Password)
+	if checkPasswd != nil {
+		ReturnError(c, g.ErrRequestRegister, checkPasswd)
+	}
+
+	db := model.GetDB(c)
+
+	findUser, err := model.GetUserInfoByEmail(db, user.Email)
+	if err == nil && findUser != nil {
+		ReturnError(c, g.ErrRequestRegister, "用户已存在，请勿重复注册!")
 		return
 	}
 
 	// 对用户的密码进行加密
-	hashedPassword, err := model.PasswordHashString(newUser.Password)
+	hashedPassword, err := model.PasswordHashString(user.Password)
 	if err != nil {
 		ReturnError(c, g.ErrRequestRegister, err)
 		return
 	}
-	newUser.Password = hashedPassword
+
+	newUser := model.User{
+		Email:    user.Email,
+		Password: hashedPassword,
+	}
 
 	// 将用户的信息保存到数据库中
-	db := model.GetDB(c)
 	userErr := model.CreateUserInfo(db, &newUser)
 	if userErr != nil {
 		ReturnError(c, g.ErrRequestRegister, userErr)

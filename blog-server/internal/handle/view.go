@@ -28,11 +28,6 @@ func (*BlogInfo) GetConfigMap(c *gin.Context) {
 	ReturnSuccess(c, data)
 }
 
-func (*BlogInfo) UpdateConfig(c *gin.Context) {
-	//var m map[string]string
-
-}
-
 func (*BlogInfo) GetHomeInfo(c *gin.Context) {
 	db := model.GetDB(c)
 

@@ -19,7 +19,7 @@ func (*Category) GetCategoryList(c *gin.Context) {
 		return
 	}
 
-	ReturnSuccess(c, CategoryResult[model.CategoryVO]{
+	ReturnSuccess(c, CategoryResult{
 		Results: results,
 		Total:   total,
 	})

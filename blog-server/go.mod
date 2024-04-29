@@ -7,6 +7,7 @@ require (
 	github.com/gin-contrib/sessions v1.0.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 	github.com/sagikazarmark/slog-shim v0.1.0
 	github.com/spf13/viper v1.18.2
 	golang.org/x/crypto v0.21.0

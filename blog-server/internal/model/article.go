@@ -15,6 +15,9 @@ type Article struct {
 	IsDeleted bool    `json:"is_deleted"`
 	SourceUrl string  `json:"source_url"`
 
+	UserId int   `json:"-"`
+	User   *User `gorm:"foreignKey:UserId" json:"user"`
+
 	CategoryId int `json:"category_id"`
 
 	Tags     []*Tag    `gorm:"many2many:article_tag;joinForeignKey:article_id" json:"tags"`

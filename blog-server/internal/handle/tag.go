@@ -74,7 +74,7 @@ func (*Tag) GetTagList(c *gin.Context) {
 		ReturnError(c, g.ErrDbOp, err)
 	}
 
-	ReturnSuccess(c, TagResult[model.TagVO]{
+	ReturnSuccess(c, TagResult{
 		Results: results,
 		Total:   total,
 	})

@@ -29,6 +29,23 @@ func GetUserInfoByName(db *gorm.DB, name string) (user *User, err error) {
 	return user, err
 }
 
+func GetUserInfoList(db *gorm.DB, pageNum, pageSize int, keyword string) (users []*User, total int64, err error) {
+	db = db.Model(&User{})
+
+	if keyword != "" {
+		db = db.Where("email = ? or name = ?", keyword)
+	}
+
+	err = db.Count(&total).Find(&users).Error
+
+	return users, total, err
+}
+
+func GetUserInfoByEmail(db *gorm.DB, email string) (user *User, err error) {
+	err = db.Where("email = ?", email).First(&user).Error
+	return user, err
+}
+
 func UpdateUserInfo(db *gorm.DB, id int, email, name, avatar string) error {
 	userInfo := User{
 		Model:  Model{ID: id},
@@ -49,7 +66,7 @@ func CreateUserInfo(db *gorm.DB, user *User) error {
 			return err
 		}
 		user.Password = hashedPassword
-		
+
 		parts := strings.Split(user.Email, "@")
 		if len(parts) < 1 {
 			return errors.New("邮箱错误")
@@ -75,13 +92,15 @@ func UpdateUserPassword(db *gorm.DB, id int, password string) error {
 	return err
 }
 
-func UpdateUserDisableAt(db *gorm.DB, id int, disable bool) (err error) {
-	if disable {
-		disableAt := time.Now()
+func UpdateUserDisableAt(db *gorm.DB, id int) (err error) {
+	disableAt := time.Now()
+	var user User
+	db = db.Model(&User{}).Where("id = ?", id).Find(&user)
 
+	if user.DisableAt.IsZero() {
 		err = db.Model(&User{}).Where("id = ?", id).Update("disabled_at", disableAt).Error
 	} else {
-		err = db.Model(&User{}).Where("id = ?", id).Update("disabled_at", nil).Error
+		err = db.Model(&User{}).Where("id = ?", id).Update("disabled_at", time.Time{}).Error
 	}
 
 	return err

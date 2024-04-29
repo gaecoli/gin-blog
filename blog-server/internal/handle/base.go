@@ -1,21 +1,24 @@
 package handle
 
 import (
+	"errors"
 	g "gin-blog/internal/global"
+	"gin-blog/internal/model"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/sagikazarmark/slog-shim"
 	"net/http"
 )
 
-type Response[T any] struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-	Data    T      `json:"data"`
+type Response struct {
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
 }
 
 // HTTP code + 业务码 + 消息 + 数据
 func ReturnHttpResponse(c *gin.Context, httpCode int, code int, msg string, data any) {
-	c.JSON(httpCode, Response[any]{
+	c.JSON(httpCode, Response{
 		Code:    code,
 		Message: msg,
 		Data:    data,
@@ -44,7 +47,7 @@ func ReturnError(c *gin.Context, r g.Result, data any) {
 
 	c.AbortWithStatusJSON(
 		http.StatusOK,
-		Response[any]{
+		Response{
 			Code:    r.Code(),
 			Message: r.Msg(),
 			Data:    data,
@@ -56,19 +59,35 @@ func ReturnSuccess(c *gin.Context, data any) {
 	ReturnResponse(c, g.OkResult, data)
 }
 
-type PageResult[T any] struct {
-	PageNum  int   `json:"page_num"`     // 每页条数
-	PageSize int   `json:"page_size"`    // 上次页数
-	Total    int64 `json:"total"`        // 总条数
-	Results  []T   `json:"page_results"` // 分页数据
+type PageResult struct {
+	PageNum  int         `json:"page_num"`     // 每页条数
+	PageSize int         `json:"page_size"`    // 上次页数
+	Total    int64       `json:"total"`        // 总条数
+	Results  interface{} `json:"page_results"` // 分页数据
 }
 
-type CategoryResult[T any] struct {
-	Results []T   `json:"results"`
-	Total   int64 `json:"total"`
+type CategoryResult struct {
+	Results interface{} `json:"results"`
+	Total   int64       `json:"total"`
 }
 
-type TagResult[T any] struct {
-	Results []T   `json:"results"`
-	Total   int64 `json:"total"`
+type TagResult struct {
+	Results interface{} `json:"results"`
+	Total   int64       `json:"total"`
+}
+
+func GetCurrentUser(c *gin.Context) (*model.User, error) {
+	session := sessions.Default(c)
+
+	id := session.Get(g.CTX_USER)
+	if id == nil {
+		return nil, errors.New("session 中没有找到 user id")
+	}
+
+	db := model.GetDB(c)
+
+	// session Get 返回类型为 interface{}
+	user, err := model.GetUserInfoById(db, id.(int))
+
+	return user, err
 }

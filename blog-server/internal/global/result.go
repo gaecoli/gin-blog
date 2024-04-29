@@ -52,10 +52,12 @@ var (
 )
 
 var (
-	ErrNotFound        = RegisterResult(4003, "资源不存在")
-	ErrDbOp            = RegisterResult(4004, "数据库操作异常")
-	ErrRequest         = RegisterResult(4005, "请求参数异常")
-	ErrParamKey        = RegisterResult(4006, "请求参数异常")
-	ErrRequestLogin    = RegisterResult(4007, "登录异常")
-	ErrRequestRegister = RegisterResult(4008, "注册失败")
+	ErrNotFound          = RegisterResult(4003, "资源不存在")
+	ErrDbOp              = RegisterResult(4004, "数据库操作异常")
+	ErrRequest           = RegisterResult(4005, "请求参数异常")
+	ErrParamKey          = RegisterResult(4006, "请求参数异常")
+	ErrRequestLogin      = RegisterResult(4007, "登录异常")
+	ErrRequestRegister   = RegisterResult(4008, "注册失败")
+	ErrFoundKeyInSession = RegisterResult(4009, "没有在 session 中找到对应的 key")
+	ErrOldPassword       = RegisterResult(4010, "旧密码错误")
 )

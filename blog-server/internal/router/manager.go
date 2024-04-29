@@ -4,6 +4,7 @@ import (
 	"gin-blog/internal/handle"
 	"gin-blog/internal/middleware"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // handle instance
@@ -13,6 +14,7 @@ var (
 	categoryApi handle.Category // 分类相关 handle 处理函数
 	tagApi      handle.Tag
 	authApi     handle.LoginApi
+	userApi     handle.User
 )
 
 func RegisterRouter(r *gin.Engine) {
@@ -24,6 +26,10 @@ func RegisterRouter(r *gin.Engine) {
 // blog 的登录，注册接口，不需要鉴权
 func registerJwtHandler(r *gin.Engine) {
 	blog := r.Group("/api/v1")
+
+	blog.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, "Pong")
+	})
 
 	blog.POST("/login", authApi.Login)
 	blog.GET("/logout", authApi.Logout)
@@ -50,11 +56,14 @@ func registerBlogManagerHandler(r *gin.Engine) {
 		})
 	}
 
-	// TODO: 补齐关于用户模块的 api
-	//user := auth.Group("/user")
-	//{
-	//	user.GET("/list", )
-	//}
+	user := auth.Group("/user")
+	{
+		user.GET("/list", userApi.GetUserInfoList)
+		user.GET("/:id", userApi.GetUserInfoById)
+		user.PUT("/archive", userApi.UpdateUserDisableInfo)
+		user.POST("", userApi.UpdateUserInfo)
+		user.POST("/change_password", userApi.UpdateUserPassword)
+	}
 
 	category := auth.Group("/category")
 	{
