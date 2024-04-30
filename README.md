@@ -99,3 +99,8 @@ blog-server
 ### 前端技术
 
 - Vue 3
+
+# License
+MIT License
+
+Copyright (c) 2024 Peter Lee
