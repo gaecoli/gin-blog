@@ -12,8 +12,8 @@ func SendEmail(from string, to, cc, bcc []string, subject string, message []byte
 
 	emailSender.From = from
 	emailSender.To = to
-	//emailSender.Cc = cc
-	//emailSender.Bcc = bcc
+	emailSender.Cc = cc
+	emailSender.Bcc = bcc
 
 	emailSender.Subject = subject
 
