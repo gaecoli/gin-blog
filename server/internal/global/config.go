@@ -39,6 +39,13 @@ type Config struct {
 		Salt   string
 		MaxAge int
 	}
+	Email struct {
+		Identity  string
+		Username  string
+		Password  string
+		Host      string
+		EmailHost string
+	}
 }
 
 var Conf *Config

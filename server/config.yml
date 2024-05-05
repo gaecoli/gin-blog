@@ -17,4 +17,9 @@ Session:
   Name: "gin-blog"
   Salt: "salt"
   MaxAge: 600
-
+Email:
+  Identity: ""
+  EmailHost: "*"
+  Username: "*"
+  Password: "*"
+  Host: "*"
