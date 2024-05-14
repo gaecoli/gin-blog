@@ -7,13 +7,14 @@ import (
 	"net/smtp"
 )
 
-func SendEmail(from string, to, cc, bcc []string, subject string, message []byte, emailType string) error {
+func SendEmail(from string, to []string, subject string, message []byte, emailType string) error {
 	emailSender := email.NewEmail()
 
 	emailSender.From = from
 	emailSender.To = to
-	emailSender.Cc = cc
-	emailSender.Bcc = bcc
+	// cc and bcc is optional
+	// emailSender.Cc = cc
+	// emailSender.Bcc = bcc
 
 	emailSender.Subject = subject
 
